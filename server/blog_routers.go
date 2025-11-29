@@ -18,16 +18,19 @@ func PrepareBlogRouters(ctx context.Context, cfg *pkg.Config, dServer *ds.Databa
 
 	// dao
 	userDao := dao.NewNewUserDao(ctx, ptr.ToString(cfg.Group), dServer)
+	articleDao := dao.NewArticleDao(ctx, ptr.ToString(cfg.Group), dServer)
 
 	// service
 	userServ := service.NewUserService(ctx, cfg, userDao)
+	articleServ := service.NewArticleService(ctx, cfg, articleDao)
 
 	// handle
 	userHandle := handle.NewUserHandle(ctx, userServ)
-	return appendBlogRouters(userHandle)
+	articleHandle := handle.NewArticleHandle(ctx, articleServ)
+	return appendBlogRouters(userHandle, articleHandle)
 }
 
-func appendBlogRouters(userHandle *handle.UserHandle) []*vortex.VortexHttpRouter {
+func appendBlogRouters(userHandle *handle.UserHandle, articleHandle *handle.ArticleHandle) []*vortex.VortexHttpRouter {
 	return []*vortex.VortexHttpRouter{
 		vortex.AppendHttpRouter([]string{http.MethodPost}, "/console/login/pwd", userHandle.LoginByPassword, "根据密码登录"),
 		vortex.AppendHttpRouter([]string{http.MethodPost}, "/console/login/email_code", userHandle.LoginByEmailCode, "根据邮箱验证码登录"),
