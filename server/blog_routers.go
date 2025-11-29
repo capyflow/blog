@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/aws/smithy-go/ptr"
 	"github.com/capyflow/Allspark-go/ds"
 	"github.com/capyflow/blog/dao"
 	"github.com/capyflow/blog/handle"
@@ -14,8 +15,9 @@ import (
 
 // / 接口文件
 func PrepareBlogRouters(ctx context.Context, cfg *pkg.Config, dServer *ds.DatabaseServer) []*vortex.VortexHttpRouter {
+
 	// dao
-	userDao := dao.NewNewUserDao(ctx, dServer)
+	userDao := dao.NewNewUserDao(ctx, ptr.ToString(cfg.Group), dServer)
 
 	// service
 	userServ := service.NewUserService(ctx, cfg, userDao)
@@ -27,6 +29,7 @@ func PrepareBlogRouters(ctx context.Context, cfg *pkg.Config, dServer *ds.Databa
 
 func appendBlogRouters(userHandle *handle.UserHandle) []*vortex.VortexHttpRouter {
 	return []*vortex.VortexHttpRouter{
-		vortex.AppendHttpRouter([]string{http.MethodPost}, "/console/login", userHandle.Login, "后台登录"),
+		vortex.AppendHttpRouter([]string{http.MethodPost}, "/console/login/pwd", userHandle.LoginByPassword, "根据密码登录"),
+		vortex.AppendHttpRouter([]string{http.MethodPost}, "/console/login/email_code", userHandle.LoginByEmailCode, "根据邮箱验证码登录"),
 	}
 }

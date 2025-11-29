@@ -14,7 +14,6 @@ import (
 func main() {
 	var cfgPath = flag.String("config", "./conf/blog.toml", "config file path")
 	flag.Parse()
-
 	cfg, err := pkg.LoadConfig(*cfgPath)
 	if err != nil {
 		panic(err)

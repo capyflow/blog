@@ -6,6 +6,8 @@ import (
 	"github.com/aws/smithy-go/ptr"
 	"github.com/capyflow/Allspark-go/ds"
 	"github.com/capyflow/blog/pkg"
+
+	"github.com/capyflow/blog/locale"
 	"github.com/capyflow/vortex/v2"
 )
 
@@ -19,17 +21,16 @@ func NewBlogServer(ctx context.Context, cfg *pkg.Config) *BlogServer {
 	bs := &BlogServer{
 		ctx: ctx,
 	}
-
-	dServer := ds.InitDatabaseServer(ctx, cfg.DatabaseConfig, func(dbIdxs map[string]interface{}) {
+	dServer := ds.InitDatabaseServer(ctx, cfg.Server.DBConfig, func(dbIdxs map[string]interface{}) {
 		dbIdxs["user"] = 2
 	})
-
 	// 准备路由
 	routers := PrepareBlogRouters(ctx, cfg, dServer)
 	bs.v = vortex.BootStrap(ctx,
-		vortex.WithPort(ptr.ToString(cfg.Port)),
-		vortex.WithJwtSecretKey(cfg.Jwt.Secret),
+		vortex.WithPort(ptr.ToString(cfg.BlogPort)),
+		vortex.WithJwtSecretKey(cfg.Server.ConsoleJwt.Secret),
 		vortex.WithRouters(routers),
+		vortex.WithI18n(locale.V),
 	)
 	return bs
 }
