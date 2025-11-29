@@ -1,0 +1,15 @@
+port = 18080
+[database.redis]
+    host = "127.0.0.1"
+    port = 26379
+    username = ""
+    password = "1433223"
+[jwt]
+    secret = "123456"
+    expire = 3600
+[s3]
+    bucket = "media-storage"
+    endpoint = "http://127.0.0.1:29000"
+    access_key = "admin"
+    secret_key = "admin@123"
+    region = "cn-north"
