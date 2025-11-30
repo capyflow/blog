@@ -25,10 +25,10 @@ var (
 		Project:       "project",
 		Entertainment: "entertainment",
 	}
-	categoryList = []string{
-		ArticleCategories.Default,
-		ArticleCategories.Project,
-		ArticleCategories.Entertainment,
+	categoryList = map[string]struct{}{
+		ArticleCategories.Default:       {},
+		ArticleCategories.Project:       {},
+		ArticleCategories.Entertainment: {},
 	}
 )
 
@@ -55,8 +55,9 @@ func NewArticleDao(ctx context.Context, group string, dServer *ds.DatabaseServer
 		panic("article redis not found")
 	}
 	return &ArticleDao{
-		ctx: ctx,
-		rdb: rdb,
+		ctx:   ctx,
+		group: group,
+		rdb:   rdb,
 	}
 }
 
@@ -115,7 +116,7 @@ func (a *ArticleDao) QueryArticleListByCategory(category string) ([]*model.Artic
 // 查询所有文件类别对应的文章列表
 func (a *ArticleDao) QueryAllArticleListByCategory(category string) ([]*model.ArticleCategory, error) {
 	articleCategories := make([]*model.ArticleCategory, 0, len(categoryList))
-	for _, category := range categoryList {
+	for category := range categoryList {
 		articles, err := a.QueryArticleListByCategory(category)
 		if err != nil {
 			logx.Errorf("ArticleDao|QueryAllArticleListByCategory|Error|%v|%s", err, category)
@@ -131,6 +132,10 @@ func (a *ArticleDao) QueryAllArticleListByCategory(category string) ([]*model.Ar
 
 // 更新文章
 func (a *ArticleDao) UpsertArticleInfo(ctx context.Context, article *model.ArticleInfo) error {
+	// 先判断一下类别是不是存在
+	if _, ok := categoryList[article.Category]; !ok {
+		return pkg.ErrorsEnum.ErrArticleCategoryNotExist
+	}
 	// 序列化文章详情
 	articleJSON, err := json.Marshal(article)
 	if err != nil {

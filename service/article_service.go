@@ -41,6 +41,9 @@ func (s *ArticleService) PublishArticle(ctx context.Context, title, content, cat
 		CreatedTs: time.Now().Unix(),
 		UpdatedTs: time.Now().Unix(),
 	}
+
+	// 根据文章内容调用ai生成文章简介
+
 	if err := s.articleDao.UpsertArticleInfo(ctx, article); err != nil {
 		logx.Errorf("ArticleService|PublishArticle|UpsertArticleInfo|Error|%v", err)
 		return err
@@ -49,6 +52,7 @@ func (s *ArticleService) PublishArticle(ctx context.Context, title, content, cat
 		logx.Errorf("ArticleService|PublishArticle|AddArticleToCategoryList|Error|%v", err)
 		return err
 	}
+	logx.Infof("ArticleService|PublishArticle|Success|%s|%s|%s", article.ID, article.Title, article.Category)
 	return nil
 }
 

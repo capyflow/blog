@@ -42,6 +42,10 @@ func (h *ArticleHandle) HandlePublishArticle(ctx *vortex.Context) error {
 
 	if err := h.articleServ.PublishArticle(h.ctx, req.Title, req.Content, req.Category); err != nil {
 		logx.Errorf("ArticleHandle|HandlePublishArticle|Error|%v", err)
+		if errors.Is(err, pkg.ErrorsEnum.ErrArticleCategoryNotExist) {
+			return vortex.HttpJsonResponse(ctx, vortex.Statuses.ParamsInvaild.WithSubCode(pkg.SubCodes.ArticleCategoryNotExist),
+				echo.Map{"msg": "article category not exist"})
+		}
 		return vortex.HttpJsonResponse(ctx, vortex.Statuses.ParamsInvaild, echo.Map{"msg": err.Error()})
 	}
 	return vortex.HttpJsonResponse(ctx, vortex.Statuses.Success, echo.Map{"msg": "publish article success"})

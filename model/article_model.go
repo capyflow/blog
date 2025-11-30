@@ -2,12 +2,14 @@ package model
 
 // ArticleInfo 文章信息
 type ArticleInfo struct {
-	ID        string `json:"id"`         // 文章id
-	Title     string `json:"title"`      // 文章标题
-	Content   string `json:"content"`    // 文章内容
-	CreatedTs int64  `json:"created_ts"` // 创建时间
-	UpdatedTs int64  `json:"updated_ts"` // 更新时间
-	Category  string `json:"category"`   // 文章分类
+	ID         string `json:"id"`         // 文章id
+	Background string `json:"background"` // 文章背景图
+	Title      string `json:"title"`      // 文章标题
+	Content    string `json:"content"`    // 文章内容
+	Excerpt    string `json:"excerpt"`    // 文章简介
+	CreatedTs  int64  `json:"created_ts"` // 创建时间
+	UpdatedTs  int64  `json:"updated_ts"` // 更新时间
+	Category   string `json:"category"`   // 文章分类
 }
 
 // 文章的摘要信息

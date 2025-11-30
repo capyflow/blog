@@ -7,10 +7,12 @@ var ErrorsEnum = struct {
 	ErrPasswordNotMatch error
 	ErrAccountNotExist  error
 
-	ErrArticleNotExist error
+	ErrArticleNotExist         error
+	ErrArticleCategoryNotExist error
 }{
-	ErrEmailNotMatch:    errors.New("email not match"),
-	ErrPasswordNotMatch: errors.New("password not match"),
-	ErrAccountNotExist:  errors.New("account not exist"),
-	ErrArticleNotExist:  errors.New("article not exist"),
+	ErrEmailNotMatch:           errors.New("email not match"),
+	ErrPasswordNotMatch:        errors.New("password not match"),
+	ErrAccountNotExist:         errors.New("account not exist"),
+	ErrArticleNotExist:         errors.New("article not exist"),
+	ErrArticleCategoryNotExist: errors.New("article category not exist"),
 }

@@ -1,6 +1,7 @@
 code_for_password_not_match = "password not match"
 code_for_email_not_match = "email not match"
 code_for_article_not_exist = "article not exist"
+code_for_article_category_not_exist = "article category not exist"
 
 
 

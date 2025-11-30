@@ -4,9 +4,10 @@ import "github.com/capyflow/blog/model"
 
 // PublishArticleReq 发布文章请求参数
 type PublishArticleReq struct {
-	Title    string `json:"title"`    // 文章标题
-	Content  string `json:"content"`  // 文章内容
-	Category string `json:"category"` // 文章分类
+	Title      string `json:"title"`      // 文章标题
+	Background string `json:"background"` // 文章背景图
+	Content    string `json:"content"`    // 文章内容
+	Category   string `json:"category"`   // 文章分类
 }
 
 // UpdateArticleReq 更新文章请求参数
