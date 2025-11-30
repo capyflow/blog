@@ -12,6 +12,7 @@ import (
 	"github.com/capyflow/blog/pkg"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -41,7 +42,24 @@ func NewUserService(ctx context.Context, cfg *pkg.Config, userDao *dao.UserDao) 
 		},
 		uid: uuid.NewString(),
 	}
+	us.initUserProfile()
 	return us
+}
+
+// 初始化用户信息
+func (u *UserService) initUserProfile() error {
+	_, err := u.QueryUserProfile(u.ctx)
+	if nil != err && !errors.Is(err, redis.Nil) {
+		logx.Errorf("UserService|initUserProfile|QueryUserProfile failed|%v", err)
+		return err
+	}
+	if errors.Is(err, redis.Nil) {
+		if err := u.userDao.UpdateUserProfile(u.ctx, &model.UserProfile{Nickname: "Aaron", Avatar: ""}); nil != err {
+			logx.Errorf("UserService|initUserProfile|UpdateUserProfile failed|%v", err)
+			return err
+		}
+	}
+	return nil
 }
 
 // login 登录

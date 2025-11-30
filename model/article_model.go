@@ -5,8 +5,8 @@ type ArticleInfo struct {
 	ID        string `json:"id"`         // 文章id
 	Title     string `json:"title"`      // 文章标题
 	Content   string `json:"content"`    // 文章内容
-	CreatedTs string `json:"created_ts"` // 创建时间
-	UpdatedTs string `json:"updated_ts"` // 更新时间
+	CreatedTs int64  `json:"created_ts"` // 创建时间
+	UpdatedTs int64  `json:"updated_ts"` // 更新时间
 	Category  string `json:"category"`   // 文章分类
 }
 
@@ -14,7 +14,7 @@ type ArticleInfo struct {
 type ArticleSummary struct {
 	ID        string `json:"id"`         // 文章id
 	Title     string `json:"title"`      // 文章标题
-	CreatedTs string `json:"created_ts"` // 创建时间
+	CreatedTs int64  `json:"created_ts"` // 创建时间
 	Category  string `json:"category"`   // 文章分类
 }
 

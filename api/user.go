@@ -5,9 +5,15 @@ import "github.com/capyflow/blog/model"
 // API 参数，所有的接口接收的参数和返回的参数都放在这里
 
 // LoginReq 登录请求
-type LoginReq struct {
-	Username string `json:"username"`
+type LoginByPwdReq struct {
+	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// 根据邮箱验证码登录
+type LoginByEmailCodeReq struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
 }
 
 // LoginResp 登录响应

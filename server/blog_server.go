@@ -22,7 +22,8 @@ func NewBlogServer(ctx context.Context, cfg *pkg.Config) *BlogServer {
 		ctx: ctx,
 	}
 	dServer := ds.InitDatabaseServer(ctx, cfg.Server.DBConfig, func(dbIdxs map[string]interface{}) {
-		dbIdxs["user"] = 2
+		dbIdxs["article"] = 2
+		dbIdxs["user"] = 1
 	})
 	// 准备路由
 	routers := PrepareBlogRouters(ctx, cfg, dServer)

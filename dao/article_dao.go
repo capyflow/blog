@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/capyflow/Allspark-go/ds"
 	"github.com/capyflow/Allspark-go/logx"
 	"github.com/capyflow/blog/model"
+	"github.com/capyflow/blog/pkg"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -59,12 +61,12 @@ func NewArticleDao(ctx context.Context, group string, dServer *ds.DatabaseServer
 }
 
 // 根据文章id查询文章
-func (a *ArticleDao) QueryArticleInfoById(articleID string) (*model.ArticleInfo, error) {
+func (a *ArticleDao) QueryArticleInfo(ctx context.Context, articleID string) (*model.ArticleInfo, error) {
 	// 从 Redis 中获取文章详情
 	articleJSON, err := a.rdb.Get(a.ctx, buildArticleInfoKey(a.group, articleID)).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, errors.New("article not found")
+			return nil, pkg.ErrorsEnum.ErrArticleNotExist
 		}
 		return nil, err
 	}
@@ -128,7 +130,7 @@ func (a *ArticleDao) QueryAllArticleListByCategory(category string) ([]*model.Ar
 }
 
 // 更新文章
-func (a *ArticleDao) UpdateArticleInfo(ctx context.Context, article *model.ArticleInfo) error {
+func (a *ArticleDao) UpsertArticleInfo(ctx context.Context, article *model.ArticleInfo) error {
 	// 序列化文章详情
 	articleJSON, err := json.Marshal(article)
 	if err != nil {
@@ -138,7 +140,22 @@ func (a *ArticleDao) UpdateArticleInfo(ctx context.Context, article *model.Artic
 	// 存储文章详情到 Redis
 	key := buildArticleInfoKey(a.group, article.ID)
 	if err := a.rdb.Set(ctx, key, articleJSON, 0).Err(); err != nil {
-		logx.Errorf("ArticleDao|UpdateArticleInfo|Set|Error|%v|%s", err, key)
+		logx.Errorf("ArticleDao|UpsertArticleInfo|Set|Error|%v|%s", err, key)
+		return err
+	}
+	return nil
+}
+
+// 文章添加到类别列表中
+func (a *ArticleDao) AddArticleToCategoryList(ctx context.Context, articleId string, category string) error {
+	// 构建文件类别listKey
+	key := buildArticleCategoryListKey(a.group, category)
+	// 向文件类别列表中添加文章
+	if err := a.rdb.ZAdd(ctx, key, redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: articleId,
+	}).Err(); err != nil {
+		logx.Errorf("ArticleDao|AddArticleToCategoryList|ZAdd|Error|%v|%s", err, key)
 		return err
 	}
 	return nil
@@ -147,7 +164,7 @@ func (a *ArticleDao) UpdateArticleInfo(ctx context.Context, article *model.Artic
 // 删除文章
 func (a *ArticleDao) DeleteArticleInfo(ctx context.Context, articleId string) error {
 	// 查询文章是否存在
-	article, err := a.QueryArticleInfoById(articleId)
+	article, err := a.QueryArticleInfo(ctx, articleId)
 	if err != nil {
 		logx.Errorf("ArticleDao|DeleteArticleInfo|QueryArticleInfoById|Error|%v|%s", err, articleId)
 		return err

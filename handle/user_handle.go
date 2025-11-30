@@ -27,7 +27,7 @@ func NewUserHandle(ctx context.Context, userServ *service.UserService) *UserHand
 
 // 根据密码登录接口
 func (uh *UserHandle) LoginByPassword(ctx *vortex.Context) error {
-	var req api.LoginReq
+	var req api.LoginByPwdReq
 	if err := ctx.Bind(&req); nil != err {
 		logx.Errorf("UserHandle|LoginByPassword|Bind req failed|%v", err)
 		return vortex.HttpJsonResponse(ctx, vortex.Statuses.ParamsInvaild, echo.Map{
@@ -35,7 +35,7 @@ func (uh *UserHandle) LoginByPassword(ctx *vortex.Context) error {
 		})
 	}
 
-	token, err := uh.userServ.LoginByPwd(ctx.GetContext(), req.Username, req.Password)
+	token, err := uh.userServ.LoginByPwd(ctx.GetContext(), req.Email, req.Password)
 	if nil != err {
 		logx.Errorf("UserHandle|LoginByPassword|LoginByPwd failed|%v", err)
 		if errors.Is(err, pkg.ErrorsEnum.ErrPasswordNotMatch) {
@@ -90,7 +90,7 @@ func (uh *UserHandle) HandleUpdateUserProfile(ctx *vortex.Context) error {
 
 // 根据邮箱验证码登录接口
 func (uh *UserHandle) LoginByEmailCode(ctx *vortex.Context) error {
-	var req api.LoginReq
+	var req api.LoginByEmailCodeReq
 	if err := ctx.Bind(&req); nil != err {
 		logx.Errorf("UserHandle|LoginByEmailCode|Bind req failed|%v", err)
 		return vortex.HttpJsonResponse(ctx, vortex.Statuses.ParamsInvaild, echo.Map{
